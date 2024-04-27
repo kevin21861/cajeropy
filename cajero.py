@@ -1,5 +1,5 @@
 import mysql.connector
-
+import re
 class CajeroAutomatico:
     def __init__(self):
         self.conexion = mysql.connector.connect(
@@ -21,7 +21,17 @@ class CajeroAutomatico:
             return True
             
         
-
+ 
+    def validador(self, msj):
+        while True:
+            msj_input = input(msj)
+            if msj_input.isdigit():
+                return int(msj_input)
+            elif msj_input.replace('.', '', 1).isdigit():
+                return float(msj_input)
+            else:
+                print("Invalido")
+            
         
     def imprimir_menu(self):
         print("\nSeleccione el monto:")
@@ -103,7 +113,7 @@ class CajeroAutomatico:
         saldo_actual = self.consultar_saldo_tarjeta(cliente_id)
         print("Su saldo actual tarjeta es:", saldo_actual)
         self.imprimir_menu()
-        opcion_monto = int(input('Seleccione el monto a retirar: '))
+        opcion_monto = self.validador('Seleccione el monto a retirar: ')
         montos_disponibles = self.generar_montos_disponibles()
 
         if opcion_monto in montos_disponibles:
@@ -121,7 +131,7 @@ class CajeroAutomatico:
             else:
                 print('Clave incorrecta')
         elif opcion_monto == 8:
-            monto_personalizado = int(input('Ingrese el monto a retirar: '))
+            monto_personalizado = self.validador('Ingrese el monto a retirar: ')
 
             if monto_personalizado % 10000 == 0 and monto_personalizado > 0:
                 clave = input("Ingrese la clave con la cual inicio sesión: ")
@@ -142,7 +152,8 @@ class CajeroAutomatico:
 
     def servicios(self, cliente_id):
 
-        codigo_convenio = int(input('Ingresa el código de convenio de su factura de 8 dígitos: '))
+        codigo_convenio = self.validador('Ingresa el código de convenio de su factura de 8 dígitos: ')
+       
         if len(str(codigo_convenio)) == 8:
             print('Elige el método de pago')
             print('1. Saldo (efectivo)')
@@ -152,11 +163,11 @@ class CajeroAutomatico:
                 1: 'saldo',
                 2: 'tarjeta'     
             }
-            opcion_elegida = int(input('ingresa : '))
+            opcion_elegida = self.validador('ingresa: ')
             if opcion_elegida in opciones:
                 if opciones[opcion_elegida] == 'saldo':
                     saldo_actual = self.consultar_saldo(cliente_id)
-                    monto = int(input('Ingrese el monto a pagar de su servicio: '))
+                    monto = self.validador('Ingrese el monto a pagar de su servicio: ')
                     clave = input("Ingrese la clave con la cual inició sesión: ")
                     cliente = self.validar_clave(clave)
                     if cliente:
@@ -171,7 +182,7 @@ class CajeroAutomatico:
                         print('Clave incorrecta')
                 elif opciones[opcion_elegida] == 'tarjeta':
                     saldo_actual = self.consultar_saldo_tarjeta(cliente_id)
-                    monto = int(input('Ingrese el monto a pagar de su servicio: '))
+                    monto = self.validador('Ingrese el monto a pagar de su servicio: ')
                     clave = input("Ingrese la clave con la cual inició sesión: ")
                     cliente = self.validar_clave(clave)
                     if cliente:
@@ -191,8 +202,8 @@ class CajeroAutomatico:
             
 
     def transferencia(self, cliente_id):
-
-        codigo_convenio = int(input('Ingresa el código de convenio de su factura de 8 dígitos: '))
+        
+        codigo_convenio = self.validador('Ingresa el código de convenio de su factura de 8 dígitos: ')
         if len(str(codigo_convenio)) == 8:
             print('Elige el método de pago')
             print('1. Saldo (efectivo)')
@@ -202,11 +213,11 @@ class CajeroAutomatico:
                 1: 'saldo',
                 2: 'tarjeta'     
             }
-            opcion_elegida = int(input('ingresa : '))
+            opcion_elegida = self.validador('ingresa : ')
             if opcion_elegida in opciones:
                 if opciones[opcion_elegida] == 'saldo':
                     saldo_actual = self.consultar_saldo(cliente_id)
-                    monto = int(input('Ingrese el monto a pagar de su servicio: '))
+                    monto = self.validador('Ingrese el monto a pagar de su servicio: ')
                     clave = input("Ingrese la clave con la cual inició sesión: ")
                     cliente = self.validar_clave(clave)
                     if cliente:
@@ -221,7 +232,7 @@ class CajeroAutomatico:
                         print('Clave incorrecta')
                 elif opciones[opcion_elegida] == 'tarjeta':
                     saldo_actual = self.consultar_saldo_tarjeta(cliente_id)
-                    monto = int(input('Ingrese el monto a pagar de su servicio: '))
+                    monto = self.validador('Ingrese el monto a pagar de su servicio: ')
                     clave = input("Ingrese la clave con la cual inició sesión: ")
                     cliente = self.validar_clave(clave)
                     if cliente:
@@ -253,7 +264,7 @@ class CajeroAutomatico:
                 
                 print("Número válido")
                 self.imprimir_menu()
-                opcion_monto = int(input('Seleccione el monto a retirar: '))
+                opcion_monto = self.validador('Seleccione el monto a retirar: ')
                 montos_disponibles = self.generar_montos_disponibles()
 
                 if opcion_monto in montos_disponibles:
@@ -261,7 +272,7 @@ class CajeroAutomatico:
                     print('\n==================================================' )
                     print('\nIngrese el codigo de 6 digitos: ')
                     print('\n==================================================' )
-                    retirar_codigo = input('Ingrese el código: ')
+                    retirar_codigo = self.validador('Ingrese el código: ')
                     if len(retirar_codigo) == 6:
                         saldo_actual = self.consultar_saldo(cliente_id)
                         if saldo_actual >= monto:
@@ -273,12 +284,12 @@ class CajeroAutomatico:
                     else:
                         print('Código inválido')
                 elif opcion_monto == 8:
-                    monto_personalizado = int(input('Ingrese el monto a retirar: '))
+                    monto_personalizado = self.validador('Ingrese el monto a retirar: ')
                     if monto_personalizado % 10000 == 0 and monto_personalizado > 0:
                         print('\n==================================================' )
                         print('\nIngrese el codigo de 6 digitos: ')
                         print('\n==================================================' )
-                        retirar_codigo = input('Ingrese el código: ')
+                        retirar_codigo = self.validador('Ingrese el código: ')
                         if len(retirar_codigo) == 6:
                             saldo_actual = self.consultar_saldo(cliente_id)
                             if saldo_actual >= monto_personalizado:
@@ -302,7 +313,7 @@ class CajeroAutomatico:
         print("2. Cuenta corriente")
         print("3. Nequi")
         print("4. Bancolombia a la mano")
-        tipo_cuenta = int(input("Seleccione el tipo de cuenta: "))
+        tipo_cuenta = self.validador("Seleccione el tipo de cuenta: ")
         if tipo_cuenta == 1:
             self.retiro_ahorros_corriente(cliente_id)
         elif tipo_cuenta == 2:
@@ -320,14 +331,28 @@ class CajeroAutomatico:
             
 
     def realizar_avance_efectivo(self, cliente_id):
-     valor = int(input("Ingrese el valor de su avance: "))
-     if valor % 10000 == 0 and valor > 0:
-         print("Realizando avance en efectivo...")
-         self.avances(valor, cliente_id)
-         print("Su saldo en su cuenta es:", cajero.consultar_saldo(cliente_id))
-         print("Su saldo actual de su tarjeta es:", cajero.consultar_saldo_tarjeta(cliente_id))
+     valor =  self.validador("Ingrese el valor de su avance: ")
+     saldo_actual = self.consultar_saldo_tarjeta(cliente_id)
+     if saldo_actual >= valor:
+        # if valor % 10000 == 0 and valor > 0:
+            print("Realizando avance en efectivo...")
+            self.avances(valor, cliente_id)
+            # print("Su saldo en su cuenta es:", cajero.consultar_saldo(cliente_id))
+            print("Su saldo actual de su tarjeta es:", cajero.consultar_saldo_tarjeta(cliente_id))
+        # else:
+        #     print('debe de ser multiplos de 10.000 o mayor a 0')
      else:
-         print('debe de ser multiplos de 10.000 o mayor a 0')
+        print('error')
+#  if len(retirar_codigo) == 6:
+#                         saldo_actual = self.consultar_saldo(cliente_id)
+#                         if saldo_actual >= monto:
+#                             nuevo_saldo = saldo_actual - monto
+#                             self.actualizar_saldo(cliente_id, nuevo_saldo)
+#                             print('Retiro exitoso. Nuevo saldo:', nuevo_saldo)
+#                         else:
+#                             print("Saldo insuficiente")
+
+    
 
     def avances2(self, valor, cliente_id):
         cursor = self.conexion.cursor()
@@ -348,8 +373,8 @@ class CajeroAutomatico:
         print("1. Cuenta Bancolombia")
         print("2. Cuenta inscrita")
         print("3. Cuenta no inscrtia")
-        tipo_cuenta = int(input("Seleccione el tipo de cuenta: "))
-        valor = int(input("Ingrese el valor : "))
+        tipo_cuenta = self.validador("Seleccione el tipo de cuenta: ")
+        valor = self.validador("Ingrese el valor : ")
         # Aquí puedes implementar la lógica para cada tipo de cuenta
         if tipo_cuenta == 1:
                 if valor % 10000 == 0 and valor > 0:
@@ -381,7 +406,7 @@ class CajeroAutomatico:
         print("\nSeleccione el tipo de servicio:")
         for tipo in servicios:
             print(f"{tipo[0]}. {tipo[1]}")
-        tipo_cuenta = int(input("Seleccione el tipo de cuenta: "))
+        tipo_cuenta = self.validador("Seleccione el tipo de cuenta: ")
         
         # Aquí puedes implementar la lógica para cada tipo de cuenta
         if tipo_cuenta == 1:
@@ -423,6 +448,7 @@ class CajeroAutomatico:
 # Ejemplo de uso del cajero automático
 cajero = CajeroAutomatico()
 
+
 # Solicitar información de cliente
 cedula = input("Ingrese su número de cédula: ")
 clave = input("Ingrese su clave: ")
@@ -452,24 +478,26 @@ if cliente:
         print('+++++++++++++++++++++++++++++++++' )
         print("7. Salir")
         print('\n==================================================' )
-        opcion = int(input("Elige la opción: "))
+        #validador = validador()
+        opcion = int(input("Elige la opción: ") ) 
+        
 
         if opcion == 1:
             print("Su saldo en su cuenta es:", cajero.consultar_saldo(cliente_id))
             print("Su saldo actual de su tarjeta es:", cajero.consultar_saldo_tarjeta(cliente_id))
         elif opcion == 2:
-            cajero.retirar_efectivo(cliente_id)
+                cajero.retirar_efectivo(cliente_id)
         elif opcion == 3:
-            cajero.realizar_avance_efectivo(cliente_id)
+                cajero.realizar_avance_efectivo(cliente_id)
         elif opcion == 4:
-            cajero.realizar_transferencia(cliente_id)
+                cajero.realizar_transferencia(cliente_id)
         elif opcion == 5:
-            cajero.pagar_servicio(cliente_id)
+                cajero.pagar_servicio(cliente_id)
         elif opcion == 6:
-            cajero.cambiar_clave(cliente_id)
+                cajero.cambiar_clave(cliente_id)
         elif opcion == 7:
-            print("Gracias por utilizar Cajero Automático. ¡Hasta luego!")
-            break
+                print("Gracias por utilizar Cajero Automático. ¡Hasta luego!")
+                break
         else:
             print("Opción inválida")
 else:
